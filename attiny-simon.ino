@@ -1,6 +1,6 @@
-#include <Arduino.h>
-
-// ATtiny85 pin allocation (5 usable I/O pins):
+// ATtiny85 Simon Game
+//
+// Pin allocation (5 usable I/O pins):
 //   PB0–PB3: shared LED + button (time-multiplexed)
 //   PB4:     buzzer
 //
@@ -11,18 +11,17 @@
 // LED phase:  pinMode OUTPUT, digitalWrite HIGH/LOW
 // Button phase: pinMode INPUT_PULLUP, digitalRead
 
-namespace {
-constexpr uint8_t BUTTON_COUNT = 4;
-constexpr uint8_t MAX_SEQUENCE = 32;
+#define BUTTON_COUNT 4
+#define MAX_SEQUENCE 32
 
-constexpr uint8_t PINS[BUTTON_COUNT] = {PB0, PB1, PB2, PB3};
-constexpr uint8_t BUZZER_PIN = PB4;
+const uint8_t PINS[BUTTON_COUNT] = {PB0, PB1, PB2, PB3};
+const uint8_t BUZZER_PIN = PB4;
 
-constexpr uint16_t TONE_FREQS[BUTTON_COUNT] = {262, 330, 392, 523};
+const uint16_t TONE_FREQS[BUTTON_COUNT] = {262, 330, 392, 523};
 
-constexpr uint16_t STEP_ON_MS = 250;
-constexpr uint16_t STEP_GAP_MS = 120;
-constexpr uint16_t INPUT_TIMEOUT_MS = 4000;
+const uint16_t STEP_ON_MS = 250;
+const uint16_t STEP_GAP_MS = 120;
+const uint16_t INPUT_TIMEOUT_MS = 4000;
 
 uint8_t sequenceBuffer[MAX_SEQUENCE] = {};
 uint8_t sequenceLength = 0;
@@ -31,7 +30,7 @@ uint32_t lcgState = 0xA5A5A5A5UL;
 
 uint8_t pseudoRandom4() {
   lcgState = (1103515245UL * lcgState + 12345UL);
-  return static_cast<uint8_t>((lcgState >> 16) & 0x03);
+  return (uint8_t)((lcgState >> 16) & 0x03);
 }
 
 // --- Pin mode switching ---
@@ -41,13 +40,13 @@ void setPinOutput(uint8_t index) {
 }
 
 void setAllPinsOutput() {
-  for (uint8_t i = 0; i < BUTTON_COUNT; ++i) {
+  for (uint8_t i = 0; i < BUTTON_COUNT; i++) {
     pinMode(PINS[i], OUTPUT);
   }
 }
 
 void setAllPinsInput() {
-  for (uint8_t i = 0; i < BUTTON_COUNT; ++i) {
+  for (uint8_t i = 0; i < BUTTON_COUNT; i++) {
     pinMode(PINS[i], INPUT_PULLUP);
   }
 }
@@ -65,13 +64,13 @@ void ledOff(uint8_t index) {
 
 void allLedsOn() {
   setAllPinsOutput();
-  for (uint8_t i = 0; i < BUTTON_COUNT; ++i) {
+  for (uint8_t i = 0; i < BUTTON_COUNT; i++) {
     digitalWrite(PINS[i], HIGH);
   }
 }
 
 void allLedsOff() {
-  for (uint8_t i = 0; i < BUTTON_COUNT; ++i) {
+  for (uint8_t i = 0; i < BUTTON_COUNT; i++) {
     digitalWrite(PINS[i], LOW);
   }
 }
@@ -87,7 +86,7 @@ void playStep(uint8_t index, uint16_t durationMs) {
 }
 
 void playFailureSignal() {
-  for (uint8_t i = 0; i < 2; ++i) {
+  for (uint8_t i = 0; i < 2; i++) {
     allLedsOn();
     tone(BUZZER_PIN, 180, 200);
     delay(220);
@@ -98,7 +97,7 @@ void playFailureSignal() {
 }
 
 void playSuccessSignal() {
-  for (uint8_t i = 0; i < BUTTON_COUNT; ++i) {
+  for (uint8_t i = 0; i < BUTTON_COUNT; i++) {
     playStep(i, 80);
     delay(30);
   }
@@ -110,7 +109,7 @@ void showSequence() {
   setAllPinsOutput();
   allLedsOff();
   delay(300);
-  for (uint8_t i = 0; i < sequenceLength; ++i) {
+  for (uint8_t i = 0; i < sequenceLength; i++) {
     playStep(sequenceBuffer[i], STEP_ON_MS);
     delay(STEP_GAP_MS);
   }
@@ -122,16 +121,16 @@ int8_t waitForButtonPress(uint16_t timeoutMs) {
   setAllPinsInput();
   delay(2);  // let pull-ups settle
 
-  const uint32_t start = millis();
+  uint32_t start = millis();
   while ((millis() - start) < timeoutMs) {
-    for (uint8_t i = 0; i < BUTTON_COUNT; ++i) {
+    for (uint8_t i = 0; i < BUTTON_COUNT; i++) {
       if (digitalRead(PINS[i]) == LOW) {
         // wait for release
         while (digitalRead(PINS[i]) == LOW) {
           delay(5);
         }
         delay(20);  // debounce
-        return static_cast<int8_t>(i);
+        return (int8_t)i;
       }
     }
     delay(1);
@@ -140,16 +139,16 @@ int8_t waitForButtonPress(uint16_t timeoutMs) {
 }
 
 bool readAndValidateInput() {
-  for (uint8_t i = 0; i < sequenceLength; ++i) {
-    const int8_t pressed = waitForButtonPress(INPUT_TIMEOUT_MS);
+  for (uint8_t i = 0; i < sequenceLength; i++) {
+    int8_t pressed = waitForButtonPress(INPUT_TIMEOUT_MS);
     if (pressed < 0) {
       return false;
     }
 
     // briefly switch to output to flash LED + play tone
-    playStep(static_cast<uint8_t>(pressed), 120);
+    playStep((uint8_t)pressed, 120);
 
-    if (static_cast<uint8_t>(pressed) != sequenceBuffer[i]) {
+    if ((uint8_t)pressed != sequenceBuffer[i]) {
       return false;
     }
   }
@@ -167,7 +166,6 @@ void extendSequence() {
     sequenceBuffer[sequenceLength++] = pseudoRandom4();
   }
 }
-}  // namespace
 
 void setup() {
   pinMode(BUZZER_PIN, OUTPUT);
