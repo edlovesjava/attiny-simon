@@ -12,9 +12,9 @@
             "type": "platformio-debug",
             "request": "launch",
             "name": "PIO Debug",
-            "executable": "/workspaces/attiny-simon/.pio/build/attiny85/firmware.elf",
+            "executable": "C:/Users/edlov/Projects/attiny-simon/.pio/build/attiny85/firmware.elf",
             "projectEnvName": "attiny85",
-            "toolchainBinDir": "/home/codespace/.platformio/packages/toolchain-atmelavr/bin",
+            "toolchainBinDir": "C:/Users/edlov/.platformio/packages/toolchain-atmelavr/bin",
             "internalConsoleOptions": "openOnSessionStart",
             "preLaunchTask": {
                 "type": "PlatformIO",
@@ -25,18 +25,18 @@
             "type": "platformio-debug",
             "request": "launch",
             "name": "PIO Debug (skip Pre-Debug)",
-            "executable": "/workspaces/attiny-simon/.pio/build/attiny85/firmware.elf",
+            "executable": "C:/Users/edlov/Projects/attiny-simon/.pio/build/attiny85/firmware.elf",
             "projectEnvName": "attiny85",
-            "toolchainBinDir": "/home/codespace/.platformio/packages/toolchain-atmelavr/bin",
+            "toolchainBinDir": "C:/Users/edlov/.platformio/packages/toolchain-atmelavr/bin",
             "internalConsoleOptions": "openOnSessionStart"
         },
         {
             "type": "platformio-debug",
             "request": "launch",
             "name": "PIO Debug (without uploading)",
-            "executable": "/workspaces/attiny-simon/.pio/build/attiny85/firmware.elf",
+            "executable": "C:/Users/edlov/Projects/attiny-simon/.pio/build/attiny85/firmware.elf",
             "projectEnvName": "attiny85",
-            "toolchainBinDir": "/home/codespace/.platformio/packages/toolchain-atmelavr/bin",
+            "toolchainBinDir": "C:/Users/edlov/.platformio/packages/toolchain-atmelavr/bin",
             "internalConsoleOptions": "openOnSessionStart",
             "loadMode": "manual"
         }

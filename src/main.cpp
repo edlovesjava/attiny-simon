@@ -6,10 +6,11 @@
 //
 // Each PB0–PB3 pin is wired as:
 //   PBx ──┬──[220R]──LED──GND
-//          └──[button]──GND
+//         ├──[10K]────────VCC
+//         └──[button]─────GND
 //
 // LED phase:  pinMode OUTPUT, digitalWrite HIGH/LOW
-// Button phase: pinMode INPUT_PULLUP, digitalRead
+// Button phase: pinMode INPUT, digitalRead (external 10K pull-up to VCC)
 
 namespace {
 constexpr uint8_t BUTTON_COUNT = 4;
@@ -49,11 +50,11 @@ void setAllPinsOutput() {
 
 void setAllPinsInput() {
   for (uint8_t i = 0; i < BUTTON_COUNT; ++i) {
-    pinMode(PINS[i], INPUT_PULLUP);
+    pinMode(PINS[i], INPUT);
   }
 }
 
-// --- Debounced pin read (pins must be in INPUT_PULLUP mode) ---
+// --- Debounced pin read (pins must be in INPUT mode) ---
 
 bool pinIsLow(uint8_t pin) {
   for (uint8_t s = 0; s < DEBOUNCE_SAMPLES; ++s) {
@@ -127,7 +128,7 @@ void showSequence() {
   }
 }
 
-// --- Button reading (pins switch to INPUT_PULLUP mode) ---
+// --- Button reading (pins switch to INPUT mode) ---
 
 int8_t waitForButtonPress(uint16_t timeoutMs) {
   setAllPinsInput();
